@@ -6,8 +6,8 @@
  - 支持二步验证的登录
  - 获取steamID SessionID
 
-代码放库[有问题留言,我看得见的],demo已经包含在函数库内
-
-Git库地址:https://coding.net/u/7gugu/p/steamBot/git
+代码放库[有问题戳我BLOG留言,我看得见的OWO],demo已经包含在函数库内
 
 邮箱:gz_7gugu@outlook.com
+
+Blog Link:www.7gugu.com
