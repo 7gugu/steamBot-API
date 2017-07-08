@@ -168,7 +168,7 @@ preg_match_all('/<option data-appid="([\S\s]*?)" value="([\S\s]*?)">([\S\s]*?)<\
 return json_encode($rs[1]);
 }
 function getinventory($steamid,$gameid){//获取用户库存[steamid:用户64位ID,gameid:游戏ID][返回JSON]
-return file_get_contents('http://steamcommunity.com/inventory/.'$steamid.'/'.$gameid.'/2');
+return file_get_contents('http://steamcommunity.com/inventory/'.$steamid.'/'.$gameid.'/2');
 }
 $username='';//账户ID
 $password='';//账户密码
