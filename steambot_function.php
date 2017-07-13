@@ -77,7 +77,7 @@ function getSession()//获取sessionID[返回String]
         $res=$steamid;
         return $res;
     }
-function curl($url, $post=null,$refer=null,$type="0",$header=null) {//curl封装 
+function curl($url,$post=null,$refer=null,$type="0",$header=null) {//curl封装 
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_URL, $url);
     curl_setopt($curl, CURLOPT_HEADER, $header); 
@@ -85,8 +85,10 @@ function curl($url, $post=null,$refer=null,$type="0",$header=null) {//curl封装
     curl_setopt ($curl, CURLOPT_SSL_VERIFYPEER, 0);
     curl_setopt ($curl, CURLOPT_SSL_VERIFYHOST, 0);
     curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.3; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0');
+    if($post!=null){
     @curl_setopt($curl, CURLOPT_POST, 1);
     @curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
+    }
    if(isset($refer)){
             curl_setopt($curl, CURLOPT_REFERER, $refer);
         }  
