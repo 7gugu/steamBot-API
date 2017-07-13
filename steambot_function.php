@@ -152,7 +152,7 @@ function declineoffer($key,$tradeOfferId) {//拒绝交易[key:API秘钥,tradeOff
             )
         );
     }
-function acceptoffer($option,$partner) {//接受交易[option:交易ID,partner:被交易者ID][返回BOOLEAN]
+function acceptoffer($option,$partner) {//接受交易[option:交易ID,partner:交易者ID(发起这次交易的那个)][返回BOOLEAN]
       	$form = array(
       		'sessionid' => getSession(),
       		'serverid' => 1,
