@@ -11,7 +11,6 @@ function toCommunityID($id) {//格式化steamid[返回String]
             return $id;
         }
     }
-
 function send($token ='',$json,$accountid)//发送交易请求[token:卖家的trade_url上的token,json:交易参数,accountid:卖家的steamID][返回JSON]
     {
         $url = 'https://steamcommunity.com/tradeoffer/new/send';
@@ -39,7 +38,6 @@ function send($token ='',$json,$accountid)//发送交易请求[token:卖家的tr
             }
         }
     }
-
 function getApiKey()//获取API秘钥[返回String]
     {
             $url = 'https://steamcommunity.com/dev/apikey';
@@ -51,9 +49,8 @@ function getApiKey()//获取API秘钥[返回String]
             } else {
                 $apikey = '';
             }	
-		return $apikey;
+        return $apikey;
     }
-
 function getSession()//获取sessionID[返回String]
     {
         $response = curl('http://steamcommunity.com/');
@@ -66,8 +63,7 @@ function getSession()//获取sessionID[返回String]
         return $res;
        
     } 
-
-	function getSteamid(){//获取steamid[返回String]
+    function getSteamid(){//获取steamid[返回String]
         $response = curl('http://steamcommunity.com/');
         $pattern = '/g_steamID = (.*);/';
         preg_match($pattern, $response, $matches);
@@ -78,10 +74,9 @@ function getSession()//获取sessionID[返回String]
         if ($steamid == 'false') {
             $steamid = 0;
         }
-		$res=$steamid;
+        $res=$steamid;
         return $res;
     }
-
 function curl($url, $post=null,$refer=null,$type="0",$header=null) {//curl封装 
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_URL, $url);
@@ -89,21 +84,20 @@ function curl($url, $post=null,$refer=null,$type="0",$header=null) {//curl封装
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); 
     curl_setopt ($curl, CURLOPT_SSL_VERIFYPEER, 0);
     curl_setopt ($curl, CURLOPT_SSL_VERIFYHOST, 0);
-	curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.3; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0');
-	@curl_setopt($curl, CURLOPT_POST, 1);
+    curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.3; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0');
+    @curl_setopt($curl, CURLOPT_POST, 1);
     @curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
    if(isset($refer)){
             curl_setopt($curl, CURLOPT_REFERER, $refer);
         }  
-	if($type=="1"){
-	curl_setopt($curl, CURLOPT_COOKIEJAR, 'cookie.txt');
-	}
-	curl_setopt($curl, CURLOPT_COOKIEFILE, 'cookie.txt'); 
+    if($type=="1"){
+    curl_setopt($curl, CURLOPT_COOKIEJAR, 'cookie.txt');
+    }
+    curl_setopt($curl, CURLOPT_COOKIEFILE, 'cookie.txt'); 
    $rs= curl_exec($curl);
     curl_close($curl);
 return $rs;	
 } 
-
 function login($username,$password,$twofa=null){//模拟登录,获取cookie[username:用户名,password:密码,twofa:二步验证码(无则不需填写)][返回JSON]
 $post = array ('username' => $username); 
 $url = "https://steamcommunity.com/login/getrsakey"; 
@@ -131,62 +125,55 @@ $key = [
         ];
         $loginResponse = curl('https://steamcommunity.com/login/dologin/', $params,"1",1);
         $loginJson = json_decode($loginResponse, true);
-		return $loginJson;
+        return $loginJson;
 }
-
 function getoffer($key,$tradeOfferId) {//获取交易细节[key:API秘钥,tradeOfferId:交易ID][返回JSON]
-		return apirequest($key,
-			array(
-				'method' => 'GetTradeOffer/v1',
-				'params' => array('tradeofferid' => $tradeOfferId,'language'=>'CN'),
-			)
-		);
-	}
-
+        return apirequest($key,
+            array(
+                'method' => 'GetTradeOffer/v1',
+                'params' => array('tradeofferid' => $tradeOfferId,'language'=>'CN'),
+            )
+        );
+    }
 function canceloffer($key,$tradeOfferId) {//取消交易[key:API秘钥,tradeOfferId:交易ID][返回BOOLEAN]
-		return apirequest($key,
-			array(
-				'method' => 'CancelTradeOffer/v1',
-				'params' => array('tradeofferid' => $tradeOfferId),
-			)
-		);
-	}
-
+        return apirequest($key,
+            array(
+                'method' => 'CancelTradeOffer/v1',
+                'params' => array('tradeofferid' => $tradeOfferId),
+            )
+        );
+    }
 function declineoffer($key,$tradeOfferId) {//拒绝交易[key:API秘钥,tradeOfferId:交易ID][返回BOOLEAN]
-		 return apirequest($key,
-			array(
-				'method' => 'DeclineTradeOffer/v1',
-				'param' => array('tradeofferid' => $tradeOfferId),
-				'post' => 1
-			)
-		);
-	}
-
-function acceptoffer($option) {//接受交易[option:交易ID][返回BOOLEAN]
-	  	$form = array(
-	  		'sessionid' => getSession(),
-	  		'serverid' => 1,
-	  		'tradeofferid' => $option,
-			'partner' => '76561198218431108'
-	  		);
-	  	$referer = 'https://steamcommunity.com/tradeoffer/'.$option.'/';
-	  	$response = curl('https://steamcommunity.com/tradeoffer/'.$option.'/accept',$form,$referer);
-	  	 print_r($response);
-	}
-
+         return apirequest($key,
+            array(
+                'method' => 'DeclineTradeOffer/v1',
+                'param' => array('tradeofferid' => $tradeOfferId),
+                'post' => 1
+            )
+        );
+    }
+function acceptoffer($option,$partner) {//接受交易[option:交易ID,partner:被交易者ID][返回BOOLEAN]
+      	$form = array(
+      		'sessionid' => getSession(),
+      		'serverid' => 1,
+      		'tradeofferid' => $option,
+            'partner' => $partner
+      		);
+      	$referer = 'https://steamcommunity.com/tradeoffer/'.$option.'/';
+      	$response = curl('https://steamcommunity.com/tradeoffer/'.$option.'/accept',$form,$referer);
+      	 print_r($response);
+    }
 function apirequest($key,$option){//发起API类请求[key:API秘钥,option:请求参数][返回JSON]
 $url = 'https://api.steampowered.com/IEconService/'.$option['method'].'/?key='.$key.($option['post'] ? '' : ('&'.http_build_query($option['params'])));
 $res=curl($url,$option['param']);
 return $res;
 }
-
 function getgamelist($nickname){//获取用户的游戏列表[nickname:玩家昵称][返回JSON]
 $content=file_get_contents('http://steamcommunity.com/id/$nickname/inventory/');
 $content=preg_replace("/[\t\n\r]+/","",$content);
 preg_match_all('/<option data-appid="([\S\s]*?)" value="([\S\s]*?)">([\S\s]*?)<\/option>/',$content,$rs);
 return json_encode($rs[1]);
 }
-
 function getinventory($steamid,$gameid){//获取用户库存[steamid:用户64位ID,gameid:游戏ID][返回JSON]
 return file_get_contents('http://steamcommunity.com/inventory/'.$steamid.'/'.$gameid.'/2');
 }
@@ -198,32 +185,32 @@ if(false){//true为开启登录,false为关闭交易
  $res=login($username,$password,$twofa);
  if($res['requires_twofactor']==false){
  if($res['success']==true){
-		echo "Login Success</br>";
-		echo "Token:".$res['transfer_parameters']['token']."<br>";
-		}else{
-		echo "Login Fail</br>";
-		}
-		}
-		}
-		echo "SteamId:".getSteamid()."<br>";
-		echo "Session:".getSession()."<br>";
+        echo "Login Success</br>";
+        echo "Token:".$res['transfer_parameters']['token']."<br>";
+        }else{
+        echo "Login Fail</br>";
+        }
+        }
+        }
+        echo "SteamId:".getSteamid()."<br>";
+        echo "Session:".getSession()."<br>";
 //test part
 $appId=304090;//游戏id[steam启动游戏的ID]
 $assetid="232300169067953574";//物品id[通过解析网页中div标签上为item_x_sssss中的ssss部分的数值]
 $token="";//第三方交易秘钥[第三方交易链接上token的那个值]
 $partner="";//被交易者id[第三方交易链接上partner的那个值]
 $json=json_encode(array(
-		'newversion' => false,
-		'version' => 2, 
-		'me' => array("assets"=> [],"currency"=> [],"ready"=> false), 
-		'them' => array("assets"=>[array("appid"=>$appId,"contextid"=>"2","amount"=>1,"assetid"=>$assetid)],"currency"=>[],"ready"=>false) 
-		),true);//交易参数
-		$id=send($token,$json,$partner);//发起交易
-		echo $id."</br>";
-		//以下的API都需要前往http://steamcommunity.com/dev/apikey申请WebApi才能用
-		$rs=canceloffer($key,$id);//第一参数为秘钥,第二参数为交易ID
-		$rs=declineoffer($key,"");//第一参数为秘钥,第二参数为交易ID
-		$rs=acceptoffer("");//第一参数为交易ID
+        'newversion' => false,
+        'version' => 2, 
+        'me' => array("assets"=> [],"currency"=> [],"ready"=> false), 
+        'them' => array("assets"=>[array("appid"=>$appId,"contextid"=>"2","amount"=>1,"assetid"=>$assetid)],"currency"=>[],"ready"=>false) 
+        ),true);//交易参数
+        $id=send($token,$json,$partner);//发起交易
+        echo $id."</br>";
+        //以下的API都需要前往http://steamcommunity.com/dev/apikey申请WebApi才能用
+        $rs=canceloffer($key,$id);//第一参数为秘钥,第二参数为交易ID
+        $rs=declineoffer($key,"");//第一参数为秘钥,第二参数为交易ID
+        $rs=acceptoffer("");//第一参数为交易ID
 /*		
 ◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇
 ◇◇◇◇◆◆◆◆◆◆◆◆◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇
@@ -240,6 +227,4 @@ $json=json_encode(array(
 ◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◆◆◆◆◆◆◆◆◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◆◆◆◆◆◆◆◆◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇
 ◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◆◆◆◆◆◆◆◆◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◆◆◆◆◆◆◆◆◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇
 ◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◆◆◆◆◆◆◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◆◆◆◆◆◆◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇
-		*/
-		
-
+        */
