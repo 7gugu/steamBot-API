@@ -11,6 +11,8 @@
 - 获取玩家库存
 
 代码放库[有问题戳我BLOG留言,我看得见的OWO],demo已经包含在函数库内
+<hr>
+我的测试环境是Apache+PHP5.5n,如果出现empty respone 我只能归结为玄学事件,至今我都没啥头绪
 
 邮箱:gz_7gugu@outlook.com
 
