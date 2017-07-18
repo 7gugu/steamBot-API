@@ -131,8 +131,13 @@ $key = [
         ];
         $loginResponse = curl('https://steamcommunity.com/login/dologin/', $params,"1",1);
         $loginJson = json_decode($loginResponse, true);
+        $file=file_get_contents("cookie.txt");
+	    if(substr_count($file,'steamcommunity.com	FALSE	/	FALSE	0	sessionid')==0){
+        file_put_contents("cookie.txt","steamcommunity.com	FALSE	/	FALSE	0	sessionid\t".getSession()."\r\n", FILE_APPEND);
+		}
 		return $loginJson;
-}function getoffer($key,$tradeOfferId) {//获取交易细节[key:API秘钥,tradeOfferId:交易ID][返回JSON]
+}
+function getoffer($key,$tradeOfferId) {//获取交易细节[key:API秘钥,tradeOfferId:交易ID][返回JSON]
         return apirequest($key,
             array(
                 'method' => 'GetTradeOffer/v1',
