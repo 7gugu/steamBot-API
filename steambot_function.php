@@ -196,7 +196,7 @@ $appid="";//游戏id[steam启动游戏的ID]
 $assetid="";//物品id[通过解析网页中div标签上为item_x_sssss中的ssss部分的数值]
 $token="";//第三方交易秘钥[第三方交易链接上token的那个值]
 $partner="";//被交易者id[第三方交易链接上partner的那个值]
-if(false){//true为开启登录,false为关闭交易
+if(false){//true为开启登录,false为关闭登陆
  $res=login($username,$password,$twofa);
  var_dump($res);
  if($res['requires_twofactor']==false){
