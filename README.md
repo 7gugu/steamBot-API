@@ -14,6 +14,9 @@
 <hr>
 我的测试环境是Apache+PHP5.5n,如果出现empty respone 我只能归结为玄学事件,至今我都没啥头绪
 
+<strong>[2018/02/08]
+</strong>最近国内无法访问steam社区,所以机器人的登录部分将会失效.目前的主要解决方法有两种:第一种是把机器人托管至海外的服务器上;第二种则是科学上网
+
 邮箱:gz_7gugu@outlook.com
 
 Blog Link:www.7gugu.com

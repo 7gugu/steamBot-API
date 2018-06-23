@@ -177,6 +177,7 @@ function getinventory($steamid, $gameid)
     return file_get_contents('http://steamcommunity.com/inventory/' . $steamid . '/' . $gameid . '/2');
 }
 //DEMO PART
+<<<<<<< HEAD
 $username = '';
 //账户ID
 $password = '';
@@ -218,6 +219,42 @@ echo $id . "</br>";
 // $rs=canceloffer($key,$id);//第一参数为秘钥,第二参数为交易ID
 // $rs=declineoffer($key,$id);//第一参数为秘钥,第二参数为交易ID
 // $rs=acceptoffer($id,$partner);//第一参数为交易ID,第二参数为被交易者ID
+=======
+$username='';//账户ID
+$password='';//账户密码
+$twofa="";//二步验证的密码,若果没有或不使用登录模块时,可不填
+$key="";//API秘钥
+$appid="";//游戏id[steam启动游戏的ID]
+$assetid="";//物品id[通过解析网页中div标签上为item_x_sssss中的ssss部分的数值]
+$token="";//第三方交易秘钥[第三方交易链接上token的那个值]
+$partner="";//被交易者id[第三方交易链接上partner的那个值]
+if(false){//true为开启登录,false为关闭登陆
+ $res=login($username,$password,$twofa);
+ var_dump($res);
+ if($res['requires_twofactor']==false){
+ if($res['success']==true){
+		echo "Login Success</br>";
+		echo "Token:".$res['transfer_parameters']['token']."<br>";
+		}else{
+		echo "Login Fail</br>";
+		}
+		}
+		}
+		echo "SteamId:".getSteamid()."<br>";
+		echo "Session:".getSession()."<br>";
+		echo "string:".toCommunityID('')."<br>";
+$json=json_encode(array(
+		'newversion' => false,
+		'version' => 2, 
+		'me' => array("assets"=> [],"currency"=> [],"ready"=> false), 
+		'them' => array("assets"=>[array("appid"=>$appid,"contextid"=>"2","amount"=>1,"assetid"=>$assetid)],"currency"=>[],"ready"=>false) 
+		),true);//交易参数
+		$id=send($token,$json,$partner);//发起交易
+		echo $id."</br>";
+		//以下的API都需要前往http://steamcommunity.com/dev/apikey申请WebApi才能用
+		// $rs=canceloffer($key,$id);//第一参数为秘钥,第二参数为交易ID
+		// $rs=declineoffer($key,$id);//第一参数为秘钥,第二参数为交易ID
+		// $rs=acceptoffer($id,$partner);//第一参数为交易ID,第二参数为被交易者ID
 		/*		
 ◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇
 ◇◇◇◇◆◆◆◆◆◆◆◆◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇◇
