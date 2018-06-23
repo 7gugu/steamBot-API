@@ -335,6 +335,7 @@ $json=json_encode(array(
 		),true);//交易参数
 		$id=$steambot->send($token,$json,$partner);//发起交易
 		echo $id."</br>";
+        echo $steambot->GenerateSteamGuardCode("Your key");
 		//以下的API都需要前往http://steamcommunity.com/dev/apikey申请WebApi才能用
 		// $rs=$steambot->canceloffer($key,$id);//第一参数为秘钥,第二参数为交易ID
 		// $rs=$steambot->declineoffer($key,$id);//第一参数为秘钥,第二参数为交易ID
