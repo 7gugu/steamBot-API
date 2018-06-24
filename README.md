@@ -13,11 +13,18 @@
 
 代码放库[有问题戳我BLOG留言,我看得见的OWO],demo已经包含在函数库内
 <hr>
+使用方法:
+<code>
+<?php
+$steambot = new SteamBot;
+$steambot->函数名();
+?>
+</code>
+<hr>
 我的测试环境是Apache+PHP5.5n,如果出现empty respone 我只能归结为玄学事件,至今我都没啥头绪
-
-<strong>[2018/02/08]
-</strong>最近国内无法访问steam社区,所以机器人的登录部分将会失效.目前的主要解决方法有两种:第一种是把机器人托管至海外的服务器上;第二种则是科学上网
-
+<strong>[2018/06/24]
+</strong>最近已经恢复了steam社区的访问,所以机器人恢复至可用状态,并且加入了二步验证的计算以及,把函数库转为了面对象
+<hr>
 邮箱:gz_7gugu@outlook.com
 
 Blog Link:www.7gugu.com
