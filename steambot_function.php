@@ -186,11 +186,12 @@ return file_get_contents('http://steamcommunity.com/inventory/'.$steamid.'/'.$ga
 	Created by Marlon Colhado
 	admin@kazeta.com.br
 */
+//字符串类型转换
 function intToByte($int)
 	{
 		return $int & (0xff);
 	} 
-	
+//创建空数组
 	function startArrayToZero($array)
 	{
 		$mode = array();
@@ -202,7 +203,7 @@ function intToByte($int)
 		}
 		return $mode;
 	}
-	
+//设定二步验证的时间	
 	function getSteamTime($localtime = false)
 	{
 		if($localtime) return time()+10;
@@ -213,7 +214,7 @@ function intToByte($int)
 		$response = json_decode($response);
 		return $response->response->server_time;
 	}
-	
+//计算时间的hash	
 	function createTimeHash($time)
 	{
 		$time /= 30;
@@ -231,19 +232,19 @@ function intToByte($int)
 		}
 		return $newTimeArray;
 	}
-	
+//使用hmac加密
 	function createHMac($timeHash, $SharedSecretDecoded)
 	{
 		$hash = hash_hmac('sha1', $timeHash, $SharedSecretDecoded, false);
 		$hmac = unpack('C*', pack('H*', $hash));
 		return $hmac;
 	}
-	
+//计算生成二步密码
 	function GenerateSteamGuardCode($shared_secret)
 	{
-		if($shared_secret == "Shared Secret Key") return "You need to change the 'Shared Secret Key' to your Shared Secret!";
+		if($shared_secret == "Your Key") return "你需要更改'Your Key'为你的Shared Secret!";//shared serect key 方法:https://www.7gugu.com/2018/06/24/%E7%BF%BB%E8%AF%91%E4%BD%BF%E7%94%A8steam-app%E8%8E%B7%E5%8F%96%E4%BD%A0%E7%9A%84steam-shared_secret_key/
 		$DecodedSharedSecret = base64_decode($shared_secret);
-		$timeHash = $this->createTimeHash($this->getSteamTime(false)); // If you need Steam Time instead the local time, use 'false'. (Using local time the response time is less)
+		$timeHash = $this->createTimeHash($this->getSteamTime(GTIME));
 		$HMAC = $this->createHMac($timeHash, $DecodedSharedSecret);
 		$HMAC = $this->startArrayToZero($HMAC);
 		
@@ -304,6 +305,8 @@ echo $id . "</br>";
 // $rs=declineoffer($key,$id);//第一参数为秘钥,第二参数为交易ID
 // $rs=acceptoffer($id,$partner);//第一参数为交易ID,第二参数为被交易者ID
 //=======
+define("APIKEY","");//网站API秘钥
+define("GTIME",false);//生成二步验证码时,是否使用当地时间,一般选择false,[即使用steam服务器时间]
 $username='';//账户ID
 $password='';//账户密码
 $twofa="";//二步验证的密码,若果没有或不使用登录模块时,可不填
@@ -335,7 +338,7 @@ $json=json_encode(array(
 		),true);//交易参数
 		$id=$steambot->send($token,$json,$partner);//发起交易
 		echo $id."</br>";
-        echo $steambot->GenerateSteamGuardCode("Your key");
+        echo $steambot->GenerateSteamGuardCode("Your key");//生成二步验证码
 		//以下的API都需要前往http://steamcommunity.com/dev/apikey申请WebApi才能用
 		// $rs=$steambot->canceloffer($key,$id);//第一参数为秘钥,第二参数为交易ID
 		// $rs=$steambot->declineoffer($key,$id);//第一参数为秘钥,第二参数为交易ID
