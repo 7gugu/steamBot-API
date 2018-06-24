@@ -15,10 +15,8 @@
 <hr>
 使用方法:
 <code>
-<?php
 $steambot = new SteamBot;
 $steambot->函数名();
-?>
 </code>
 <hr>
 我的测试环境是Apache+PHP5.5n,如果出现empty respone 我只能归结为玄学事件,至今我都没啥头绪
