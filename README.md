@@ -22,15 +22,7 @@
 <div class="blockcode">
 <div id="code_n9N">
 
-<code>
-<?php 
-//登录DEMO 
-require('steambot_function.php'); 
-$obj = new SteamBot(); 
-$res=$obj->login("7gugu","password");
-var_dump($res);
-?>
-  </code>
+
 
 </div>
 </div>
