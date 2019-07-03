@@ -18,14 +18,7 @@
 
 <span style="font-family: 微软雅黑;">
 </span>
-<span style="font-size: x-large;"><strong><span style="font-family: 微软雅黑;">使用方法:</span></strong></span>
-<div class="blockcode">
-<div id="code_n9N">
 
-
-
-</div>
-</div>
 <span style="font-size: x-large;"><strong>可用方法:</strong></span>
 <table class="t_table" cellspacing="0">
 <tbody>
