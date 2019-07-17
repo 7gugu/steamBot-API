@@ -190,7 +190,7 @@ class SteamBot {
 	 */
 	public function canceloffer($key,$tradeOfferId) 
 	{
-		return apirequest($key,
+		return $this->apirequest($key,
 			array(
 				'method' => 'CancelTradeOffer/v1',
 				'params' => array('tradeofferid' => $tradeOfferId),
@@ -206,13 +206,37 @@ class SteamBot {
 	 */
 	public function declineoffer($key,$tradeOfferId) 
 	{
-		 return apirequest($key,
+		 return $this->apirequest($key,
 			array(
 				'method' => 'DeclineTradeOffer/v1',
 				'param' => array('tradeofferid' => $tradeOfferId),
 				'post' => 1
 			)
 		);
+	}
+	
+	/**
+	 *	获取已接收的交易报价
+	 *	@param string $key 网站的APIKEY
+	 *	@return string 
+	 */
+	public function getoffers($key) 
+	{
+		$param = json_encode(
+			array(
+				'get_received_offers'=>true,
+				'get_sent_offers'=>false,
+				'get_received_offers'=>true,
+				'get_descriptions'=>false,
+				'language'=>'zh_cn',
+				'active_only'=>true,
+				'historical_only'=>false,
+				'time_historical_cutoff'=>false,
+			)
+		);
+		$url = 'https://api.steampowered.com/IEconService/GetTradeOffers/v1/?key='.$key.'&input_json='.$param;
+		echo $url;
+		return $this->curl($url);
 	}
 	
 	/**
@@ -310,8 +334,12 @@ class SteamBot {
 	 */
 	private function apirequest($key,$option)
 	{
-		$url = 'https://api.steampowered.com/IEconService/'.$option['method'].'/?key='.$key.($option['post'] ? '' : ('&'.http_build_query($option['params'])));
-		$res=$this->curl($url,$option['param']);
+		$url = 'https://api.steampowered.com/IEconService/'.$option['method'].'/?key='.$key.($option['post'] ? '' : ('&'.http_build_query($option['param'])));
+		if($option['post']==1){
+			$res=$this->curl($url,$option['param']);
+		}else{
+			$res=$this->curl($url,null);
+		}
 		return $res;
 	}
 	
