@@ -7,6 +7,7 @@ class SteamBot {
 	private $identity_secret="";
 	private $shared_secret="";
 	private $confs = array();
+	private $session=null;
 	
 	/**
 	 *	设定SteamID
@@ -171,14 +172,15 @@ class SteamBot {
 	 */
 	public function acceptoffer($tradeOfferId,$partnerId) 
 	{
+		$this->session=$this->getSession();
 	  	$form = array(
-	  		'sessionid' => $this->getSession(),
+	  		'sessionid' =>$this->session,
 	  		'serverid' => 1,
 	  		'tradeofferid' => $tradeOfferId,
 			'partner' => $this->toCommunityID($partnerId)
 	  		);
-	  	$referer = 'https://steamcommunity.com/tradeoffer/'.$option.'/';
-	  	$response = $this->curl('https://steamcommunity.com/tradeoffer/'.$option.'/accept',$form,$referer);
+	  	$referer = 'https://steamcommunity.com/tradeoffer/'.$tradeOfferId."/";
+	  	$response = $this->curl('https://steamcommunity.com/tradeoffer/'.$tradeOfferId.'/accept',$form,$referer,2);
 	  	return ($response);
 	}
 	
@@ -193,7 +195,7 @@ class SteamBot {
 		return $this->apirequest($key,
 			array(
 				'method' => 'CancelTradeOffer/v1',
-				'params' => array('tradeofferid' => $tradeOfferId),
+				'param' => array('tradeofferid' => $tradeOfferId),
 			)
 		);
 	}
@@ -235,7 +237,6 @@ class SteamBot {
 			)
 		);
 		$url = 'https://api.steampowered.com/IEconService/GetTradeOffers/v1/?key='.$key.'&input_json='.$param;
-		echo $url;
 		return $this->curl($url);
 	}
 	
@@ -298,7 +299,7 @@ class SteamBot {
 	 *	@param $url 请求的目标网址
 	 *	@param $post 需要POST的数据
 	 *	@param $refer
-	 *	@param $type 0:正常模式|1:登录模式,生成COOKIE文件
+	 *	@param $type 0:正常模式|1:登录模式,生成COOKIE文件|2:接受报价模式
 	 *	@param $header 请求头
 	 *	@return string 
 	 */
@@ -309,6 +310,7 @@ class SteamBot {
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); 
 		curl_setopt ($curl, CURLOPT_SSL_VERIFYPEER, 0);
 		curl_setopt ($curl, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
 		curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.3; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0');
 		if($post!=null){
 			@curl_setopt($curl, CURLOPT_POST, 1);
@@ -317,15 +319,37 @@ class SteamBot {
 		if(isset($refer)){
             curl_setopt($curl, CURLOPT_REFERER, $refer);
         }  
-		if($type=="1"){
+		if($type==1){
 			curl_setopt($curl, CURLOPT_COOKIEJAR, 'cookie.txt');
 		}
-		curl_setopt($curl, CURLOPT_COOKIEFILE, 'cookie.txt'); 
+		if($type==2){
+			$string=file_get_contents("cookie.txt");
+			curl_setopt($curl, CURLOPT_COOKIE, 'sessionid='.$this->session.';'.$this->cookieToString($string));
+		}else{
+			curl_setopt($curl, CURLOPT_COOKIEFILE, 'cookie.txt');		
+		}
 		$rs= curl_exec($curl);
 		curl_close($curl);
 		return $rs;	
 	} 
-
+	
+	/**
+	 *	cookie文件转字符串
+	 *  @return String 生成的字符串
+	 */
+	private function cookieToString($string){
+		$cookieString = '';
+		$lines = explode("\n", $string);
+		foreach($lines as $line){
+			if(isset($line[0]) && substr_count($line, "\t") == 6){
+				$tokens = explode("\t", $line);
+				$tokens = array_map('trim', $tokens);
+				$cookieString .= $tokens[5].'='.$tokens[6].'; ';
+			}
+		}
+		return $cookieString;
+	}
+	
 	/**
 	 *	Api请求组件
 	 *	@param $key 网站的APIKEY
