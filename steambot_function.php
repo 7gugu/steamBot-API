@@ -8,6 +8,10 @@ class SteamBot {
 	private $shared_secret="";
 	private $confs = array();
 	private $session=null;
+	private $proxyMode=false;
+	private $proxyAddress="127.0.0.1";
+	private $proxyPort="1080";
+	private $proxyUserPwd="";
 	
 	/**
 	 *	设定SteamID
@@ -45,6 +49,28 @@ class SteamBot {
 	 */
 	public function setIdentitySecret($identity_secret){
 		$this->identity_secret=$identity_secret;
+	}
+	
+	/*
+	 * 设置代理服务器
+	 * @param String 代理服务器地址
+	 * @param String 代理服务器端口
+	 * @param String 代理服务器用户名&密码 格式:Username:Password
+	 * @output Boolean 输出操作状态
+	 */
+	public function setProxyServer($proxyAddress,$proxyPort,$proxyUserPwd=""){
+		if($proxyAddress!=""&&$proxyPort!=""){
+			$this->proxyMode=true;
+			$this->proxyAddress=$proxyAddress;
+			$this->proxyPort=$proxyPort;
+			if($proxyUserPwd!=""){
+				$this->proxyUserPwd=$proxyUserPwd;
+			}
+		}else{
+			$this->proxyMode=false;
+			return false;
+		}
+		return true;
 	}
 	
 	/**
@@ -312,6 +338,14 @@ class SteamBot {
 		curl_setopt ($curl, CURLOPT_SSL_VERIFYHOST, 0);
 		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
 		curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.3; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0');
+		if($this->proxyMode){
+				curl_setopt($curl, CURLOPT_PROXYAUTH, CURLAUTH_BASIC); //代理认证模式
+				curl_setopt($curl, CURLOPT_PROXY, $this->proxyAddress); //代理服务器地址
+				curl_setopt($curl, CURLOPT_PROXYPORT, $this->proxyPort); //代理服务器端口
+				if($this->proxyUserPwd!=""){
+					curl_setopt($curl, CURLOPT_PROXYUSERPWD, $this->proxyUserPwd); //http代理认证帐号，名称:pwd的格式
+				}
+			}
 		if($post!=null){
 			@curl_setopt($curl, CURLOPT_POST, 1);
 			@curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
