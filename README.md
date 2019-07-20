@@ -11,6 +11,7 @@
  	<li><span style="font-family: 微软雅黑;"><strong>获取玩家库存</strong></span></li>
  	<li><span style="font-family: 微软雅黑;"><strong>支持自动过二步验证[需要提供shared_sersect,方法详参我的博客]</strong></span></li>
  	<li><span style="font-family: 微软雅黑;"><strong>支持面对象</strong>
+    <li><span style="font-family: 微软雅黑;"><strong>支持代理服务器</strong></span></li>
 </span></li>
  	<li><span style="font-family: 微软雅黑;"><strong>支持遍历未确认的交易请求</strong></span></li>
  	<li><span style="font-family: 微软雅黑;"><strong>确认/取消发回饰品的交易</strong></span></li>
