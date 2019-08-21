@@ -265,6 +265,23 @@ class SteamBot {
 		$url = 'https://api.steampowered.com/IEconService/GetTradeOffers/v1/?key='.$key.'&input_json='.$param;
 		return $this->curl($url);
 	}
+
+	/**
+	 *	获取交易报价的状态
+	 *	@param string $key 网站的APIKEY
+	 *	@param string $tradeOfferId 交易报价ID
+	 *	@return string 
+	 */
+	public function getOffer($key,$tradeOfferId){
+		$param = json_encode(
+			array(
+				'language'=>'zh_cn',
+				'tradeofferid'=>$tradeOfferId,
+			)
+		);
+		$url = 'https://api.steampowered.com/IEconService/GetTradeOffer/v1/?key='.$key.'&input_json='.$param;
+		return $this->curl($url);
+	}
 	
 	/**
 	 *	社区ID转SteamID
@@ -287,7 +304,7 @@ class SteamBot {
 	 *	@param void
 	 *	@return string SessionID
 	 */
-	private function getSession()
+	public function getSession()
     {
         $response = $this->curl('https://steamcommunity.com/');
         $pattern = '/g_sessionID = (.*);/';
@@ -305,7 +322,7 @@ class SteamBot {
 	 *	@param void
 	 *	@return string 成功:SteamID|失败:0|无法访问:Unexpected response from Steam.
 	 */
-	private function getSteamid(){
+	public function getSteamID(){
         $response = $this->curl('https://steamcommunity.com/');
         $pattern = '/g_steamID = (.*);/';
         preg_match($pattern, $response, $matches);
@@ -569,7 +586,8 @@ class SteamBot {
             $response = $this->curl($url);
         } catch (Exception $ex) {
             return $confirmations;
-        }
+		}
+		file_put_contents("check.html",$response);
         if (strpos($response, '<div>Nothing to confirm</div>') === false) {
             $confIdRegex = '/data-confid="(\d+)"/';
             $confKeyRegex = '/data-key="(\d+)"/';
@@ -588,11 +606,11 @@ class SteamBot {
                     }
                     $confKey = $confKeyMatches[1][$i];
                     $confOfferId = $confOfferMatches[1][$i];
-                    $confDesc = $confDescMatches[$i];
+                    //$confDesc = $confDescMatches[$i];
 					$this->confs[$i][0]=$confId;
 					$this->confs[$i][1]=$confKey;
 					$this->confs[$i][2]=$confOfferId;
-					$this->confs[$i][3]=$confDesc;
+					//$this->confs[$i][3]=$confDesc;
 				    $checkedConfIds[] = $confId;
                 }
             } 
@@ -653,8 +671,7 @@ class SteamBot {
      */
     private function sendConfirmationAjax($confirmation, $op)
     {
-		for($i=0;$i<count($confirmation);$i++){
-        $url = 'https://steamcommunity.com/mobileconf/ajaxop?op=' . $op . '&' . $this->generateConfirmationQueryParams($op) . '&cid=' . $confirmation[$i][0] . '&ck=' . $confirmation[$i][1];
+        $url = 'https://steamcommunity.com/mobileconf/ajaxop?op=' . $op . '&' . $this->generateConfirmationQueryParams($op) . '&cid=' . $confirmation[0] . '&ck=' . $confirmation[1];
         $response = '';
         try {
             $response = $this->curl($url);
@@ -665,6 +682,5 @@ class SteamBot {
             return isset($json['success']) && $json['success'];
         }
         return false;
-		}
     }
 	}
