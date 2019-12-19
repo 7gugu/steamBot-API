@@ -40,7 +40,7 @@
 <td>设定IdentitySecret</td>
 </tr>
 <tr>
-<td>setProxyServer/td>
+<td>setProxyServer</td>
 <td>设定代理服务器信息</td>
 </tr>
 <tr>
