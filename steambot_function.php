@@ -7,6 +7,11 @@ class SteamBot {
 	private $identity_secret="";
 	private $shared_secret="";
 	private $confs = array();
+	private $session=null;
+	private $proxyMode=false;
+	private $proxyAddress="127.0.0.1";
+	private $proxyPort="1080";
+	private $proxyUserPwd="";
 	
 	/**
 	 *	设定SteamID
@@ -44,6 +49,28 @@ class SteamBot {
 	 */
 	public function setIdentitySecret($identity_secret){
 		$this->identity_secret=$identity_secret;
+	}
+	
+	/*
+	 * 设置代理服务器
+	 * @param String 代理服务器地址
+	 * @param String 代理服务器端口
+	 * @param String 代理服务器用户名&密码 格式:Username:Password
+	 * @output Boolean 输出操作状态
+	 */
+	public function setProxyServer($proxyAddress,$proxyPort,$proxyUserPwd=""){
+		if($proxyAddress!=""&&$proxyPort!=""){
+			$this->proxyMode=true;
+			$this->proxyAddress=$proxyAddress;
+			$this->proxyPort=$proxyPort;
+			if($proxyUserPwd!=""){
+				$this->proxyUserPwd=$proxyUserPwd;
+			}
+		}else{
+			$this->proxyMode=false;
+			return false;
+		}
+		return true;
 	}
 	
 	/**
@@ -171,14 +198,15 @@ class SteamBot {
 	 */
 	public function acceptoffer($tradeOfferId,$partnerId) 
 	{
+		$this->session=$this->getSession();
 	  	$form = array(
-	  		'sessionid' => $this->getSession(),
+	  		'sessionid' =>$this->session,
 	  		'serverid' => 1,
 	  		'tradeofferid' => $tradeOfferId,
 			'partner' => $this->toCommunityID($partnerId)
 	  		);
-	  	$referer = 'https://steamcommunity.com/tradeoffer/'.$option.'/';
-	  	$response = $this->curl('https://steamcommunity.com/tradeoffer/'.$option.'/accept',$form,$referer);
+	  	$referer = 'https://steamcommunity.com/tradeoffer/'.$tradeOfferId."/";
+	  	$response = $this->curl('https://steamcommunity.com/tradeoffer/'.$tradeOfferId.'/accept',$form,$referer,2);
 	  	return ($response);
 	}
 	
@@ -190,10 +218,10 @@ class SteamBot {
 	 */
 	public function canceloffer($key,$tradeOfferId) 
 	{
-		return apirequest($key,
+		return $this->apirequest($key,
 			array(
 				'method' => 'CancelTradeOffer/v1',
-				'params' => array('tradeofferid' => $tradeOfferId),
+				'param' => array('tradeofferid' => $tradeOfferId),
 			)
 		);
 	}
@@ -206,13 +234,53 @@ class SteamBot {
 	 */
 	public function declineoffer($key,$tradeOfferId) 
 	{
-		 return apirequest($key,
+		 return $this->apirequest($key,
 			array(
 				'method' => 'DeclineTradeOffer/v1',
 				'param' => array('tradeofferid' => $tradeOfferId),
 				'post' => 1
 			)
 		);
+	}
+	
+	/**
+	 *	获取已接收的交易报价
+	 *	@param string $key 网站的APIKEY
+	 *	@return string 
+	 */
+	public function getoffers($key) 
+	{
+		$param = json_encode(
+			array(
+				'get_received_offers'=>true,
+				'get_sent_offers'=>false,
+				'get_received_offers'=>true,
+				'get_descriptions'=>false,
+				'language'=>'zh_cn',
+				'active_only'=>true,
+				'historical_only'=>false,
+				'time_historical_cutoff'=>false,
+			)
+		);
+		$url = 'https://api.steampowered.com/IEconService/GetTradeOffers/v1/?key='.$key.'&input_json='.$param;
+		return $this->curl($url);
+	}
+
+	/**
+	 *	获取交易报价的状态
+	 *	@param string $key 网站的APIKEY
+	 *	@param string $tradeOfferId 交易报价ID
+	 *	@return string 
+	 */
+	public function getOffer($key,$tradeOfferId){
+		$param = json_encode(
+			array(
+				'language'=>'zh_cn',
+				'tradeofferid'=>$tradeOfferId,
+			)
+		);
+		$url = 'https://api.steampowered.com/IEconService/GetTradeOffer/v1/?key='.$key.'&input_json='.$param;
+		return $this->curl($url);
 	}
 	
 	/**
@@ -236,7 +304,7 @@ class SteamBot {
 	 *	@param void
 	 *	@return string SessionID
 	 */
-	private function getSession()
+	public function getSession()
     {
         $response = $this->curl('https://steamcommunity.com/');
         $pattern = '/g_sessionID = (.*);/';
@@ -254,7 +322,7 @@ class SteamBot {
 	 *	@param void
 	 *	@return string 成功:SteamID|失败:0|无法访问:Unexpected response from Steam.
 	 */
-	private function getSteamid(){
+	public function getSteamID(){
         $response = $this->curl('https://steamcommunity.com/');
         $pattern = '/g_steamID = (.*);/';
         preg_match($pattern, $response, $matches);
@@ -274,7 +342,7 @@ class SteamBot {
 	 *	@param $url 请求的目标网址
 	 *	@param $post 需要POST的数据
 	 *	@param $refer
-	 *	@param $type 0:正常模式|1:登录模式,生成COOKIE文件
+	 *	@param $type 0:正常模式|1:登录模式,生成COOKIE文件|2:接受报价模式
 	 *	@param $header 请求头
 	 *	@return string 
 	 */
@@ -285,7 +353,16 @@ class SteamBot {
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1); 
 		curl_setopt ($curl, CURLOPT_SSL_VERIFYPEER, 0);
 		curl_setopt ($curl, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
 		curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 6.3; WOW64; rv:27.0) Gecko/20100101 Firefox/27.0');
+		if($this->proxyMode){
+				curl_setopt($curl, CURLOPT_PROXYAUTH, CURLAUTH_BASIC); //代理认证模式
+				curl_setopt($curl, CURLOPT_PROXY, $this->proxyAddress); //代理服务器地址
+				curl_setopt($curl, CURLOPT_PROXYPORT, $this->proxyPort); //代理服务器端口
+				if($this->proxyUserPwd!=""){
+					curl_setopt($curl, CURLOPT_PROXYUSERPWD, $this->proxyUserPwd); //http代理认证帐号，名称:pwd的格式
+				}
+			}
 		if($post!=null){
 			@curl_setopt($curl, CURLOPT_POST, 1);
 			@curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
@@ -293,15 +370,37 @@ class SteamBot {
 		if(isset($refer)){
             curl_setopt($curl, CURLOPT_REFERER, $refer);
         }  
-		if($type=="1"){
+		if($type==1){
 			curl_setopt($curl, CURLOPT_COOKIEJAR, 'cookie.txt');
 		}
-		curl_setopt($curl, CURLOPT_COOKIEFILE, 'cookie.txt'); 
+		if($type==2){
+			$string=file_get_contents("cookie.txt");
+			curl_setopt($curl, CURLOPT_COOKIE, 'sessionid='.$this->session.';'.$this->cookieToString($string));
+		}else{
+			curl_setopt($curl, CURLOPT_COOKIEFILE, 'cookie.txt');		
+		}
 		$rs= curl_exec($curl);
 		curl_close($curl);
 		return $rs;	
 	} 
-
+	
+	/**
+	 *	cookie文件转字符串
+	 *  @return String 生成的字符串
+	 */
+	private function cookieToString($string){
+		$cookieString = '';
+		$lines = explode("\n", $string);
+		foreach($lines as $line){
+			if(isset($line[0]) && substr_count($line, "\t") == 6){
+				$tokens = explode("\t", $line);
+				$tokens = array_map('trim', $tokens);
+				$cookieString .= $tokens[5].'='.$tokens[6].'; ';
+			}
+		}
+		return $cookieString;
+	}
+	
 	/**
 	 *	Api请求组件
 	 *	@param $key 网站的APIKEY
@@ -310,8 +409,12 @@ class SteamBot {
 	 */
 	private function apirequest($key,$option)
 	{
-		$url = 'https://api.steampowered.com/IEconService/'.$option['method'].'/?key='.$key.($option['post'] ? '' : ('&'.http_build_query($option['params'])));
-		$res=$this->curl($url,$option['param']);
+		$url = 'https://api.steampowered.com/IEconService/'.$option['method'].'/?key='.$key.($option['post'] ? '' : ('&'.http_build_query($option['param'])));
+		if($option['post']==1){
+			$res=$this->curl($url,$option['param']);
+		}else{
+			$res=$this->curl($url,null);
+		}
 		return $res;
 	}
 	
@@ -483,7 +586,8 @@ class SteamBot {
             $response = $this->curl($url);
         } catch (Exception $ex) {
             return $confirmations;
-        }
+		}
+		file_put_contents("check.html",$response);
         if (strpos($response, '<div>Nothing to confirm</div>') === false) {
             $confIdRegex = '/data-confid="(\d+)"/';
             $confKeyRegex = '/data-key="(\d+)"/';
@@ -502,11 +606,11 @@ class SteamBot {
                     }
                     $confKey = $confKeyMatches[1][$i];
                     $confOfferId = $confOfferMatches[1][$i];
-                    $confDesc = $confDescMatches[$i];
+                    //$confDesc = $confDescMatches[$i];
 					$this->confs[$i][0]=$confId;
 					$this->confs[$i][1]=$confKey;
 					$this->confs[$i][2]=$confOfferId;
-					$this->confs[$i][3]=$confDesc;
+					//$this->confs[$i][3]=$confDesc;
 				    $checkedConfIds[] = $confId;
                 }
             } 
@@ -514,11 +618,6 @@ class SteamBot {
         return $this->confs;
     }
 	
-    /**
-     * Get the trade offer ID of a confirmation. May need to retry more than once due to Steam occasionally failing to load the trade page.
-     * @param Confirmation $confirmation
-     * @return string
-     */
 	/**
      * 获取交易确认页的TradeOfferId.
 	 * Warning:Steam时不时会抽筋,所以要多遍历一两次,才会获取到列表
@@ -572,8 +671,7 @@ class SteamBot {
      */
     private function sendConfirmationAjax($confirmation, $op)
     {
-		for($i=0;$i<count($confirmation);$i++){
-        $url = 'https://steamcommunity.com/mobileconf/ajaxop?op=' . $op . '&' . $this->generateConfirmationQueryParams($op) . '&cid=' . $confirmation[$i][0] . '&ck=' . $confirmation[$i][1];
+        $url = 'https://steamcommunity.com/mobileconf/ajaxop?op=' . $op . '&' . $this->generateConfirmationQueryParams($op) . '&cid=' . $confirmation[0] . '&ck=' . $confirmation[1];
         $response = '';
         try {
             $response = $this->curl($url);
@@ -584,6 +682,5 @@ class SteamBot {
             return isset($json['success']) && $json['success'];
         }
         return false;
-		}
     }
 	}
