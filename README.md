@@ -128,7 +128,7 @@
 <span style="font-family: 微软雅黑;">
 </span>
 
-<strong><span style="font-family: 微软雅黑;"><span style="font-size: x-large;">更新日志:</span></span></strong>
+<strong><span style="font-family: 微软雅黑;"><span style="font-size: x-large;">更新日志:</span></span></strong><br/>
 <span style="font-family: 微软雅黑;">2019/06/15:</span>
 <span style="font-family: 微软雅黑;">时隔一年时间,加入了遍历确认的功能。</span>
 <span style="font-family: 微软雅黑;">Umarket也弃坑了[项目太大了,一个人无法carry,以后再考虑用框架重写]</span>
