@@ -222,6 +222,7 @@ class SteamBot {
 			array(
 				'method' => 'CancelTradeOffer/v1',
 				'param' => array('tradeofferid' => $tradeOfferId),
+				'post' => 1
 			)
 		);
 	}

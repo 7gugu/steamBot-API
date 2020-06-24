@@ -5,7 +5,8 @@
 <ul>
  	<li><span style="font-family: 微软雅黑;"><strong>接受/拒绝/取消/发起交易</strong></span></li>
  	<li><span style="font-family: 微软雅黑;"><strong>支持二步验证的登录</strong></span></li>
- 	<li><span style="font-family: 微软雅黑;"><strong>获取单笔交易状态</strong><strong>- 获取steamID SessionID</strong></span></li>
+ 	<li><span style="font-family: 微软雅黑;"><strong>获取单笔交易状态</strong></span></li>
+	 <li><span style="font-family: 微软雅黑;"><strong>获取steamID SessionID</strong></span></li>
  	<li><span style="font-family: 微软雅黑;"><strong>获取玩家游戏列表</strong></span></li>
  	<li><span style="font-family: 微软雅黑;"><strong>获取API秘钥</strong></span></li>
  	<li><span style="font-family: 微软雅黑;"><strong>获取玩家库存</strong></span></li>
@@ -99,6 +100,16 @@
 </table>
 <span style="font-size: x-large;"><strong><span style="font-family: 微软雅黑;">
 </span></strong></span>
+<strong><span style="font-family: 微软雅黑;"><span style="font-size: x-large;">交易字符串样例:</span></span></strong>
+<br>
+<code>
+{"newversion":true,"version":1,"me":[{"assets":{"appid":"游戏AppID","contextid":"2","amount":1,"assetid":"游戏饰品的ID"}],"currency":[],"ready":true},"them":{"assets":[],"currency":[],"ready":false}}
+</code>
+<br>
+<span style="font-size: x-large;"><strong><span style="font-family: 微软雅黑;">开发文档:</span></strong></span>
+<br>
+<a href="https://www.yuque.com/books/share/8f76ee1e-917e-4656-82d2-cebec314829c?#">https://www.yuque.com/books/share/8f76ee1e-917e-4656-82d2-cebec314829c?#</a>
+<br>
 <span style="font-size: x-large;"><strong><span style="font-family: 微软雅黑;">注意事项:</span></strong></span>
 这些是使用Umarket试运营后得出的一些注意事项,请注意!
 <ul class="litype_1" type="1">
@@ -116,7 +127,6 @@
 <i><strong><span style="font-family: 微软雅黑;">[有问题邮箱留言,我看得见的]</span></strong></i>
 <span style="font-family: 微软雅黑;">
 </span>
-
 
 <strong><span style="font-family: 微软雅黑;"><span style="font-size: x-large;">更新日志:</span></span></strong>
 <span style="font-family: 微软雅黑;">2019/06/15:</span>
